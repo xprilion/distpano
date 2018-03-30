@@ -1,5 +1,8 @@
 <?php
 
+	error_reporting(E_ALL);
+	ini_set('display_errors', 1);
+
 	include('head.php');
 	require_once("splitter.php");
 
@@ -67,6 +70,8 @@
 			$sql3 = "INSERT INTO staged(task_id, img_id, status) VALUES ('$taskId','$img_id','0')";
 			$conn -> query($sql3);
 
+			$sql4 = "UPDATE pending SET staged = '1' WHERE id = '$img_id'";
+			mysqli_query($conn, $sql4);
 
 		}
 	}
