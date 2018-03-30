@@ -1,0 +1,21 @@
+<!DOCTYPEhtml>
+<html>
+	<head>
+		<title>Uploader</title>
+		<link rel="stylesheet" href="css/w3.css" />
+		<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
+	</head>
+	<body>
+		<img src="img/1.jpg" style="width:100%;">
+		<div class="w3-theme-d3">
+			<div class="" style="margin-left:30%;">
+				<form action="upload.php" method="post" enctype="multipart/form-data">
+				Enter the Folder name:   <input type="text" name="Folder" />
+				<br><br>Filename:<input type="file" name="file[]" id="file" multiple/> <br><br>
+
+				<button class="w3-btn w3-black w3-round w3-margin-bottom" type="submit" name="submit" value="Submit" />Upload</button>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>
