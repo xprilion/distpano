@@ -2,9 +2,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.*;
-import java .util.*;
+import java.util.*;
 
 public class LocalLinuxClient {
+
+    static int doRun = 0;
 
     public static String gopto()
     {
@@ -14,8 +16,8 @@ public class LocalLinuxClient {
         try
         {
 
-            Runtime.getRuntime().exec(" pto_gen -o store/project.pto store/v.jpg store/h.jpg");
-            Runtime.getRuntime().exec(" cpfind --multirow -o store/output.pto store/project.pto");
+            Runtime.getRuntime().exec(" pto_gen -o /home/xprilion/webroot/distpano/client/store/project.pto v.jpg h.jpg");
+            Runtime.getRuntime().exec(" cpfind --multirow -o /home/xprilion/webroot/distpano/client/store/output.pto /home/xprilion/webroot/distpano/client/store/project.pto");
             File file = new File("/home/xprilion/webroot/distpano/client/store/output.pto");
 
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -101,96 +103,180 @@ public class LocalLinuxClient {
         }
     }
 
+    public static void work(){
+
+        if(LocalLinuxClient.doRun == 1){
+            String taskFetchUrl = "http://localhost/distpano/taskAllocator.php";
+                        // String taskFetchUrl = "https://facebook.com";
+                         // URL url = new URL(args[0]);
+            try {
+                URL url = new URL(taskFetchUrl);
+                try{
+
+                    URLConnection connection = url.openConnection();
+                    connection.setDoOutput(true);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    String decodedString;
+                    String s = "";
+                    while ((decodedString = in.readLine()) != null) {
+                        //System.out.println(decodedString);
+                        s += decodedString;
+                    }
+
+                    System.out.println("KJSDLSJD: "+s);
+
+                    if(s!=null)
+                    {
+
+                        //System.out.println("KJSDLSJD: "+s);
+
+                        String taskhash= s.substring(31,63);
+                        String imghash1= s.substring(77,109);
+                        String imghash2= s.substring(123,155);
+                        String h= s.substring(162,163);
+                        String v= s.substring(170,171);
+                        String ext1= s.substring(181,184);
+                        String ext2= s.substring(194,197);
+                        System.out.println("taskhash:"+taskhash);
+                        System.out.println("imagehash1:"+imghash1);
+
+                        System.out.println("imagehash2:"+imghash2);
+                        System.out.println("h:"+h);
+                        System.out.println("v:"+v);
+                        System.out.println("ext1:"+ext1);
+                        System.out.println("ext2:"+ext2);
+
+                        String imgurl1 = "http://localhost/distpano/staged/"+taskhash+"/"+imghash1+"/h/"+h+"."+ext1;
+                        System.out.println(imgurl1);
+                        String imgurl2 = "http://localhost/distpano/staged/"+taskhash+"/"+imghash2+"/v/"+v+"."+ext2;
+                        System.out.println(imgurl2);
+
+                        URL urlH = new URL(imgurl1);
+                        URL urlV = new URL(imgurl2);
+
+                        File fileH = new File("h.jpg");
+                        File fileV = new File("v.jpg");
+
+                        LocalLinuxClient.copyURLToFile(urlH, fileH);
+                        LocalLinuxClient.copyURLToFile(urlV, fileV);
+
+                        String res = LocalLinuxClient.gopto();
+
+                        String resUrl = "http://localhost/distpano/clientSendResult.php?taskhash=" + taskhash + "&imghash1=" + imghash1 + "&imghash2=" + imghash2 + "&h=" + h + "&v=" + v + "&res=" + res;
+
+                        System.out.println("Result Call: " + resUrl);
+
+                        URL resGo = new URL(resUrl);
+                        URLConnection resConn = resGo.openConnection();
+                        resConn.setDoOutput(true);
+                        BufferedReader resin = new BufferedReader(new InputStreamReader(resConn.getInputStream()));
+                        String decodedRes;
+                        while ((decodedRes = resin.readLine()) != null) {
+                            System.out.println(decodedRes);
+                        }
+
+                    }
+
+                }
+                catch(IOException eee){
+
+                }
+            }
+            catch(IOException ee){
+
+            }
+        }
+
+        Timer timer = new Timer();
+
+        TimerTask task = new TimerTask(){
+            public void run(){
+                LocalLinuxClient.work();
+            }
+        };
+
+        timer.schedule(task, 5000);
+    }
+
 
     public static void main(String[] args){
 
+        String sx = "";
+
+        File confile = new File("clientConfig.json");
+        if(confile.exists() && !confile.isDirectory()) {
+
+            try{
+                Scanner scanner = new Scanner( confile );
+                sx = scanner.useDelimiter("\\A").next();
+                scanner.close();
+            }
+            catch(FileNotFoundException fe){
+                System.out.println("No found!");
+            }
+
+            // do something
+        }
+
+        String clientConnectUrl = "http://localhost/distpano/clientConnect.php?cid="+sx.substring(51);
+                    // String taskFetchUrl = "https://facebook.com";
+                     // URL url = new URL(args[0]);
+
+        System.out.println(clientConnectUrl);
+
+        try {
+            URL url = new URL(clientConnectUrl);
+            try{
+
+                URLConnection connection = url.openConnection();
+                connection.setDoOutput(true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String decodedString;
+                String s = "";
+                while ((decodedString = in.readLine()) != null) {
+                    //System.out.println(decodedString);
+                    s += decodedString;
+                }
+
+                System.out.println(s);
+
+                try (PrintWriter out = new PrintWriter("clientConfig.json")) {
+                    out.println(s);
+                }
+                catch(FileNotFoundException fe){
+                    System.out.println("And here too");
+                }
+            }
+            catch(IOException e){
+                System.out.println("There");
+            }
+        }
+        catch(IOException e){
+            System.out.println("Here");
+        }
+
         Frame f=new Frame("Sih18LocalLinuxClient");
 
-        final Label tf=new Label("Hello World");
-        tf.setBounds(50,50, 150,20);
+        final Label tf=new Label("SIH 2018 - Panorama Maker");
+        tf.setBounds(50,50, 200,20);
 
-        Button b=new Button("Execute");
-        b.setBounds(50,100,60,30);
-        b.addActionListener(new ActionListener(){
+        Button startButton=new Button("Start");
+        startButton.setBounds(50,100,60,30);
+        startButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                    String stringToReverse = "http://localhost/distpano/taskAllocator.php";
-                    // String stringToReverse = "https://facebook.com";
-                     // URL url = new URL(args[0]);
-                try {
-                    URL url = new URL(stringToReverse);
-                    try{
-                        URLConnection connection = url.openConnection();
-                        connection.setDoOutput(true);
-                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                        String decodedString;
-                        String s = "";
-                        while ((decodedString = in.readLine()) != null) {
-                            //System.out.println(decodedString);
-                            s += decodedString;
-                        }
+                System.out.println("Start Execute");
+                LocalLinuxClient.doRun = 1;
+                LocalLinuxClient.work();
+            }
+        });
 
-                        System.out.println("KJSDLSJD: "+s);
 
-                        if(s!=null)
-                        {
-
-                            //System.out.println("KJSDLSJD: "+s);
-
-                            String taskhash= s.substring(31,63);
-                            String imghash1= s.substring(77,109);
-                            String imghash2= s.substring(123,155);
-                            String h= s.substring(162,163);
-                            String v= s.substring(170,171);
-                            String ext1= s.substring(181,184);
-                            String ext2= s.substring(194,197);
-                            System.out.println("taskhash:"+taskhash);
-                            System.out.println("imagehash1:"+imghash1);
-
-                            System.out.println("imagehash2:"+imghash2);
-                            System.out.println("h:"+h);
-                            System.out.println("v:"+v);
-                            System.out.println("ect1:"+ext1);
-                            System.out.println("ect2:"+ext2);
-
-                            String imgurl1 = "http://localhost/distpano/staged/"+taskhash+"/"+imghash1+"/h/"+h+"."+ext1;
-                            System.out.println(imgurl1);
-                            String imgurl2 = "http://localhost/distpano/staged/"+taskhash+"/"+imghash2+"/v/"+v+"."+ext2;
-                            System.out.println(imgurl2);
-
-                            URL urlH = new URL(imgurl1);
-                            URL urlV = new URL(imgurl2);
-
-                            File fileH = new File("h.jpg");
-                            File fileV = new File("v.jpg");
-
-                            LocalLinuxClient.copyURLToFile(urlH, fileH);
-                            LocalLinuxClient.copyURLToFile(urlV, fileV);
-
-                            String res = LocalLinuxClient.gopto();
-
-                            String resUrl = "http://localhost/distpano/clientSendResult.php?taskhash=" + taskhash + "&imghash1=" + imghash1 + "&imghash2=" + imghash2 + "&h=" + h + "&v=" + v + "&res=" + res;
-
-                            System.out.println("Result Call: " + resUrl);
-
-                            URL resGo = new URL(resUrl);
-                            URLConnection resConn = resGo.openConnection();
-                            resConn.setDoOutput(true);
-                            BufferedReader resin = new BufferedReader(new InputStreamReader(resConn.getInputStream()));
-                            String decodedRes;
-                            while ((decodedRes = resin.readLine()) != null) {
-                                System.out.println(decodedRes);
-                            }
-
-                        }
-
-                    }
-                    catch(IOException eee){
-
-                    }
-                }
-                catch(IOException ee){
-
-                }
+        Button stopButton=new Button("Stop");
+        stopButton.setBounds(150,100,60,30);
+        stopButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                System.out.println("Stop Execute");
+                LocalLinuxClient.doRun = 0;
             }
         });
 
@@ -201,10 +287,12 @@ public class LocalLinuxClient {
             }
         } );
 
-        f.add(b);
+        f.add(startButton);
+        f.add(stopButton);
         f.add(tf);
         f.setSize(400,400);
         f.setLayout(null);
         f.setVisible(true);
+
     }
 }

@@ -52,7 +52,7 @@
 
 		if(mysqli_num_rows($resHandler) < 3){
 
-			return;
+			return false;
 		}
 		else{
 
@@ -88,11 +88,12 @@
 
 			}
 
+			return true;
 
 		}
 
-		imagejpeg($image1, "results/".$imghash1.".jpg");
-		imagejpeg($image2, "results/".$imghash2.".jpg");
+		imagejpeg($image1, "VisualLogs/".$imghash1.".jpg");
+		imagejpeg($image2, "VisualLogs/".$imghash2.".jpg");
 	}
 
 
@@ -119,14 +120,20 @@
 		$thash = mysqli_fetch_assoc($resHandle["getTaskHash"]);
 		$taskhash = $thash["hashname"];
 
-		$res1 = "results/".$imghash1.".jpg";
-		$res2 = "results/".$imghash2.".jpg";
+		$res1 = "images/"$taskhash."/".$imghash1.".jpg";
+		$res2 = "images/".$taskhash."/".$imghash2.".jpg";
 
-		$createPto = shell_exec('pto_gen -o /home/xprilion/webroot/sih18server/results/project.pto /home/xprilion/webroot/sih18server/'.$res1.' /home/xprilion/webroot/sih18server/'.$res2);
+		$createPto = shell_exec('pto_gen -o /home/xprilion/webroot/distpano/results/project.pto /home/xprilion/webroot/distpano/'.$res1.' /home/xprilion/webroot/distpano/'.$res2);
+
+		shell_exec("cpclean -o /home/xprilion/webroot/distpano/results/project.pto /home/xprilion/webroot/distpano/results/project.pto");
+		shell_exec("linefind -o /home/xprilion/webroot/distpano/results/project.pto /home/xprilion/webroot/distpano/results/project.pto");
+		shell_exec("autooptimiser -a -m -l -s -o /home/xprilion/webroot/distpano/results/project.pto /home/xprilion/webroot/distpano/results/project.pto");
+		shell_exec("pano_modify --canvas=AUTO --crop=AUTO -o /home/xprilion/webroot/distpano/results/project.pto /home/xprilion/webroot/distpano/results/project.pto");
+		shell_exec("hugin_executor --stitching --prefix=prefix /home/xprilion/webroot/distpano/results/project.pto");
 
 	}
 
-	checkResult(2, 1, 2, "JPG", "JPG");
-	stitchQuick(2, 1, 2, "JPG", "JPG");
+	// checkResult(2, 1, 2, "JPG", "JPG");
+	// stitchQuick(2, 1, 2, "JPG", "JPG");
 
 	// india@123
