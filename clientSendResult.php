@@ -1,6 +1,7 @@
 <?php
 
     include('head.php');
+    include('resultAssimilator.php');
 
     $taskhash = $_GET["taskhash"];
     $imghash1 = $_GET["imghash1"];
@@ -85,6 +86,11 @@
     echo '<br>';
     if(!mysqli_query($conn, $sql["res"])){
         echo mysqli_error($conn);
+    }
+
+    if(checkResult($taskid, $imgid1, $imgid2, "JPG", "JPG")){
+        echo "asdasd";
+        stitchQuick($taskid, $imgid1, $imgid2, "JPG", "JPG");
     }
 
 ?>

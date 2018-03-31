@@ -88,12 +88,12 @@
 
 			}
 
+			imagejpeg($image1, "VisualLogs/".$imghash1.".jpg");
+			imagejpeg($image2, "VisualLogs/".$imghash2.".jpg");
+
 			return true;
 
 		}
-
-		imagejpeg($image1, "VisualLogs/".$imghash1.".jpg");
-		imagejpeg($image2, "VisualLogs/".$imghash2.".jpg");
 	}
 
 
