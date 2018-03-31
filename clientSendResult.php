@@ -14,7 +14,7 @@
 
     $res = $_GET["res"];
 
-    if(strlen(trim(ltrim(rtrim($res)))) > 0){
+    if((strlen(trim(ltrim(rtrim($res)))) > 0) && (res!="error")){
 
         //$res = "23,34|54,24;45,25|57,85;34,77|53,75;";
 
@@ -89,7 +89,7 @@
     }
 
     if(checkResult($taskid, $imgid1, $imgid2, "JPG", "JPG")){
-        echo "asdasd";
+        echo "enough points";
         stitchQuick($taskid, $imgid1, $imgid2, "JPG", "JPG");
     }
 

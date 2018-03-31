@@ -37,5 +37,6 @@
                 }
             }
         }
+		header('location: dashboard.php');
     }
 ?>

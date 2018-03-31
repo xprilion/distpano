@@ -1,7 +1,7 @@
 <?php
 
-	error_reporting(E_ALL);
-	ini_set('display_errors', 1);
+	// error_reporting(E_ALL);
+	// ini_set('display_errors', 1);
 
 
 	function checkResult($taskid, $imgid1, $imgid2, $ext1, $ext2){
@@ -50,13 +50,17 @@
 
 		$ellipseColor = imagecolorallocate($image1, 255, 0, 0);
 
-		if(mysqli_num_rows($resHandler) < 3){
+		if(mysqli_num_rows($resHandler) < 10){
 
 			return false;
 		}
 		else{
 
+			$counter = 0;
+
 			while($res = mysqli_fetch_assoc($resHandler)){
+
+				$counter ++;
 
 				if ($res["result"] != '0'){
 					print "<pre>";
@@ -88,8 +92,10 @@
 
 			}
 
-			imagejpeg($image1, "VisualLogs/".$imghash1.".jpg");
-			imagejpeg($image2, "VisualLogs/".$imghash2.".jpg");
+
+
+			// imagejpeg($image1, "VisualLogs/".$imghash1.".jpg");
+			// imagejpeg($image2, "VisualLogs/".$imghash2.".jpg");
 
 			return true;
 
@@ -120,16 +126,33 @@
 		$thash = mysqli_fetch_assoc($resHandle["getTaskHash"]);
 		$taskhash = $thash["hashname"];
 
-		$res1 = "images/"$taskhash."/".$imghash1.".jpg";
-		$res2 = "images/".$taskhash."/".$imghash2.".jpg";
+		$res1 = "images/".$taskhash."/".$imghash1.".JPG";
+		$res2 = "images/".$taskhash."/".$imghash2.".JPG";
 
-		$createPto = shell_exec('pto_gen -o /home/xprilion/webroot/distpano/results/project.pto /home/xprilion/webroot/distpano/'.$res1.' /home/xprilion/webroot/distpano/'.$res2);
 
-		shell_exec("cpclean -o /home/xprilion/webroot/distpano/results/project.pto /home/xprilion/webroot/distpano/results/project.pto");
-		shell_exec("linefind -o /home/xprilion/webroot/distpano/results/project.pto /home/xprilion/webroot/distpano/results/project.pto");
-		shell_exec("autooptimiser -a -m -l -s -o /home/xprilion/webroot/distpano/results/project.pto /home/xprilion/webroot/distpano/results/project.pto");
-		shell_exec("pano_modify --canvas=AUTO --crop=AUTO -o /home/xprilion/webroot/distpano/results/project.pto /home/xprilion/webroot/distpano/results/project.pto");
-		shell_exec("hugin_executor --stitching --prefix=prefix /home/xprilion/webroot/distpano/results/project.pto");
+		$createPto = shell_exec('cpto_gen -o /home/xprilion/webroot/distpano/results/project.pto /home/xprilion/webroot/distpano/'.$res1.' /home/xprilion/webroot/distpano/'.$res2);
+
+
+		// $output = "<pre>".shell_exec("./runner.sh")."</pre>";
+		// echo $output;
+
+		shell_exec("ccpclean -o /home/xprilion/webroot/distpano/results/project.pto /home/xprilion/webroot/distpano/results/project.pto");
+		shell_exec("clinefind -o /home/xprilion/webroot/distpano/results/project.pto /home/xprilion/webroot/distpano/results/project.pto");
+		shell_exec("cautooptimiser -a -m -l -s -o /home/xprilion/webroot/distpano/results/project.pto /home/xprilion/webroot/distpano/results/project.pto");
+		shell_exec("cpano_modify --canvas=AUTO --crop=AUTO -o /home/xprilion/webroot/distpano/results/project.pto /home/xprilion/webroot/distpano/results/project.pto");
+		shell_exec("chugin_executor --stitching --prefix=prefix /home/xprilion/webroot/distpano/results/project.pto");
+
+		$sql = "UPDATE staged SET status = '2' WHERE img_id = '$imgid1'";
+		mysqli_query($conn, $sql);
+
+		$sql = "UPDATE staged SET status = '2' WHERE img_id = '$imgid2'";
+		mysqli_query($conn, $sql);
+
+		copy('/home/xprilion/Videos/project.pto', '/home/xprilion/webroot/distpano/results/project.pto');
+		copy('/home/xprilion/Videos/output.pto', '/home/xprilion/webroot/distpano/results/output.pto');
+		copy('/home/xprilion/Videos/out.tif', '/home/xprilion/webroot/distpano/results/'.$taskhash.'.tif');
+		copy('/home/xprilion/Videos/img1.jpg', '/home/xprilion/webroot/distpano/VisualLogs/'.$imghash1.'.jpg');
+		copy('/home/xprilion/Videos/img2.jpg', '/home/xprilion/webroot/distpano/VisualLogs/'.$imghash2.'.jpg');
 
 	}
 
