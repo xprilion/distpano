@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.*;
 import java .util.*;
 
-public class Client {
+public class WinClient {
 
     public static String gopto()
     {
@@ -168,10 +168,10 @@ public class Client {
                             File fileH = new File("h.jpg");
                             File fileV = new File("v.jpg");
 
-                            Client.copyURLToFile(urlH, fileH);
-                            Client.copyURLToFile(urlV, fileV);
+                            WinClient.copyURLToFile(urlH, fileH);
+                            WinClient.copyURLToFile(urlV, fileV);
 
-                            String res = Client.gopto();
+                            String res = WinClient.gopto();
 
                             String resUrl = "https://sih.phoenixnsec.org/clientSendResult.php?taskhash=" + taskhash + "&imghash1=" + imghash1 + "&imghash2=" + imghash2 + "&h=" + h + "&v=" + v + "&res=" + res;
 
