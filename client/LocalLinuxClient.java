@@ -125,54 +125,62 @@ public class LocalLinuxClient {
 
                     System.out.println("KJSDLSJD: "+s);
 
-                    if(s!=null)
+                    if(s!="null")
                     {
 
-                        //System.out.println("KJSDLSJD: "+s);
+                        String status = s.substring(10, 11);
 
-                        String taskhash= s.substring(31,63);
-                        String imghash1= s.substring(77,109);
-                        String imghash2= s.substring(123,155);
-                        String h= s.substring(162,163);
-                        String v= s.substring(170,171);
-                        String ext1= s.substring(181,184);
-                        String ext2= s.substring(194,197);
-                        System.out.println("taskhash:"+taskhash);
-                        System.out.println("imagehash1:"+imghash1);
+                        if(status.equals("0")){
 
-                        System.out.println("imagehash2:"+imghash2);
-                        System.out.println("h:"+h);
-                        System.out.println("v:"+v);
-                        System.out.println("ext1:"+ext1);
-                        System.out.println("ext2:"+ext2);
+                            //System.out.println("KJSDLSJD: "+s);
 
-                        String imgurl1 = "http://localhost/distpano/staged/"+taskhash+"/"+imghash1+"/h/"+h+"."+ext1;
-                        System.out.println(imgurl1);
-                        String imgurl2 = "http://localhost/distpano/staged/"+taskhash+"/"+imghash2+"/v/"+v+"."+ext2;
-                        System.out.println(imgurl2);
+                            String taskhash= s.substring(31,63);
+                            String imghash1= s.substring(77,109);
+                            String imghash2= s.substring(123,155);
+                            String h= s.substring(162,163);
+                            String v= s.substring(170,171);
+                            String ext1= s.substring(181,184);
+                            String ext2= s.substring(194,197);
+                            System.out.println("taskhash:"+taskhash);
+                            System.out.println("imagehash1:"+imghash1);
 
-                        URL urlH = new URL(imgurl1);
-                        URL urlV = new URL(imgurl2);
+                            System.out.println("imagehash2:"+imghash2);
+                            System.out.println("h:"+h);
+                            System.out.println("v:"+v);
+                            System.out.println("ext1:"+ext1);
+                            System.out.println("ext2:"+ext2);
 
-                        File fileH = new File("h.jpg");
-                        File fileV = new File("v.jpg");
+                            String imgurl1 = "http://localhost/distpano/staged/"+taskhash+"/"+imghash1+"/h/"+h+"."+ext1;
+                            System.out.println(imgurl1);
+                            String imgurl2 = "http://localhost/distpano/staged/"+taskhash+"/"+imghash2+"/v/"+v+"."+ext2;
+                            System.out.println(imgurl2);
 
-                        LocalLinuxClient.copyURLToFile(urlH, fileH);
-                        LocalLinuxClient.copyURLToFile(urlV, fileV);
+                            URL urlH = new URL(imgurl1);
+                            URL urlV = new URL(imgurl2);
 
-                        String res = LocalLinuxClient.gopto();
+                            File fileH = new File("h.jpg");
+                            File fileV = new File("v.jpg");
 
-                        String resUrl = "http://localhost/distpano/clientSendResult.php?taskhash=" + taskhash + "&imghash1=" + imghash1 + "&imghash2=" + imghash2 + "&h=" + h + "&v=" + v + "&res=" + res;
+                            LocalLinuxClient.copyURLToFile(urlH, fileH);
+                            LocalLinuxClient.copyURLToFile(urlV, fileV);
 
-                        System.out.println("Result Call: " + resUrl);
+                            String res = LocalLinuxClient.gopto();
 
-                        URL resGo = new URL(resUrl);
-                        URLConnection resConn = resGo.openConnection();
-                        resConn.setDoOutput(true);
-                        BufferedReader resin = new BufferedReader(new InputStreamReader(resConn.getInputStream()));
-                        String decodedRes;
-                        while ((decodedRes = resin.readLine()) != null) {
-                            System.out.println(decodedRes);
+                            String resUrl = "http://localhost/distpano/clientSendResult.php?taskhash=" + taskhash + "&imghash1=" + imghash1 + "&imghash2=" + imghash2 + "&h=" + h + "&v=" + v + "&res=" + res;
+
+                            System.out.println("Result Call: " + resUrl);
+
+                            URL resGo = new URL(resUrl);
+                            URLConnection resConn = resGo.openConnection();
+                            resConn.setDoOutput(true);
+                            BufferedReader resin = new BufferedReader(new InputStreamReader(resConn.getInputStream()));
+                            String decodedRes;
+                            while ((decodedRes = resin.readLine()) != null) {
+                                System.out.println(decodedRes);
+                            }
+                        }
+                        else{
+
                         }
 
                     }
@@ -195,7 +203,7 @@ public class LocalLinuxClient {
             }
         };
 
-        timer.schedule(task, 5000);
+        timer.schedule(task, 500);
     }
 
 
@@ -215,44 +223,81 @@ public class LocalLinuxClient {
                 System.out.println("No found!");
             }
 
-            // do something
-        }
+            String clientConnectUrl = "http://localhost/distpano/clientConnect.php?cid=";
 
-        String clientConnectUrl = "http://localhost/distpano/clientConnect.php?cid="+sx.substring(51);
-                    // String taskFetchUrl = "https://facebook.com";
-                     // URL url = new URL(args[0]);
+            if(sx.length() > 0){
+                clientConnectUrl += sx.substring(50);
+            }
 
-        System.out.println(clientConnectUrl);
+            try {
+                URL url = new URL(clientConnectUrl);
+                try{
 
-        try {
-            URL url = new URL(clientConnectUrl);
-            try{
+                    URLConnection connection = url.openConnection();
+                    connection.setDoOutput(true);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    String decodedString;
+                    String s = "";
+                    while ((decodedString = in.readLine()) != null) {
+                        //System.out.println(decodedString);
+                        s += decodedString;
+                    }
 
-                URLConnection connection = url.openConnection();
-                connection.setDoOutput(true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String decodedString;
-                String s = "";
-                while ((decodedString = in.readLine()) != null) {
-                    //System.out.println(decodedString);
-                    s += decodedString;
+                    System.out.println(s);
+
                 }
-
-                System.out.println(s);
-
-                try (PrintWriter out = new PrintWriter("clientConfig.json")) {
-                    out.println(s);
-                }
-                catch(FileNotFoundException fe){
-                    System.out.println("And here too");
+                catch(IOException e){
+                    System.out.println("Error");
                 }
             }
             catch(IOException e){
-                System.out.println("There");
+                System.out.println("Error");
             }
+
+            // do something
         }
-        catch(IOException e){
-            System.out.println("Here");
+        else{
+
+            String clientConnectUrl = "http://localhost/distpano/clientConnect.php?cid=";
+
+            if(sx.length() > 0){
+                clientConnectUrl += sx.substring(50);
+            }
+                        // String taskFetchUrl = "https://facebook.com";
+                         // URL url = new URL(args[0]);
+
+            System.out.println(clientConnectUrl);
+
+            try {
+                URL url = new URL(clientConnectUrl);
+                try{
+
+                    URLConnection connection = url.openConnection();
+                    connection.setDoOutput(true);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    String decodedString;
+                    String s = "";
+                    while ((decodedString = in.readLine()) != null) {
+                        //System.out.println(decodedString);
+                        s += decodedString;
+                    }
+
+                    System.out.println(s);
+
+                    try (PrintWriter out = new PrintWriter("clientConfig.json")) {
+                        out.println(s);
+                    }
+                    catch(FileNotFoundException fe){
+                        System.out.println("Error");
+                    }
+                }
+                catch(IOException e){
+                    System.out.println("Error");
+                }
+            }
+            catch(IOException e){
+                System.out.println("Error");
+            }
         }
 
         Frame f=new Frame("Sih18LocalLinuxClient");
@@ -267,6 +312,55 @@ public class LocalLinuxClient {
                 System.out.println("Start Execute");
                 LocalLinuxClient.doRun = 1;
                 LocalLinuxClient.work();
+
+                String sx = "";
+
+                File confile = new File("clientConfig.json");
+                if(confile.exists() && !confile.isDirectory()) {
+
+                    try{
+                        Scanner scanner = new Scanner( confile );
+                        sx = scanner.useDelimiter("\\A").next();
+                        scanner.close();
+                    }
+                    catch(FileNotFoundException fe){
+                        System.out.println("No found!");
+                    }
+
+                    // do something
+                }
+
+                String clientConnectUrl = "http://localhost/distpano/clientConnect.php?cid="+sx.substring(50);
+                            // String taskFetchUrl = "https://facebook.com";
+                             // URL url = new URL(args[0]);
+
+                System.out.println(clientConnectUrl);
+
+                try {
+                    URL url = new URL(clientConnectUrl);
+                    try{
+
+                        URLConnection connection = url.openConnection();
+                        connection.setDoOutput(true);
+                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                        String decodedString;
+                        String s = "";
+                        while ((decodedString = in.readLine()) != null) {
+                            //System.out.println(decodedString);
+                            s += decodedString;
+                        }
+
+                        System.out.println(s);
+
+                    }
+                    catch(IOException err){
+                        System.out.println("Error");
+                    }
+                }
+                catch(IOException etr){
+                    System.out.println("Error");
+                }
+
             }
         });
 
@@ -277,12 +371,111 @@ public class LocalLinuxClient {
             public void actionPerformed(ActionEvent e){
                 System.out.println("Stop Execute");
                 LocalLinuxClient.doRun = 0;
+
+                String sx = "";
+
+                File confile = new File("clientConfig.json");
+                if(confile.exists() && !confile.isDirectory()) {
+
+                    try{
+                        Scanner scanner = new Scanner( confile );
+                        sx = scanner.useDelimiter("\\A").next();
+                        scanner.close();
+                    }
+                    catch(FileNotFoundException fe){
+                        System.out.println("No found!");
+                    }
+
+                    // do something
+                }
+
+                String clientDisconnectUrl = "http://localhost/distpano/disconnectClient.php?cid="+sx.substring(50);
+                            // String taskFetchUrl = "https://facebook.com";
+                             // URL url = new URL(args[0]);
+
+                System.out.println(clientDisconnectUrl);
+
+                try {
+                    URL url = new URL(clientDisconnectUrl);
+                    try{
+
+                        URLConnection connection = url.openConnection();
+                        connection.setDoOutput(true);
+                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                        String decodedString;
+                        String s = "";
+                        while ((decodedString = in.readLine()) != null) {
+                            //System.out.println(decodedString);
+                            s += decodedString;
+                        }
+
+                        System.out.println(s);
+
+                    }
+                    catch(IOException err){
+                        System.out.println("Error");
+                    }
+                }
+                catch(IOException etr){
+                    System.out.println("Error");
+                }
+
             }
         });
 
         f.addWindowListener( new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent we) {
+
+                String sx = "";
+
+                File confile = new File("clientConfig.json");
+                if(confile.exists() && !confile.isDirectory()) {
+
+                    try{
+                        Scanner scanner = new Scanner( confile );
+                        sx = scanner.useDelimiter("\\A").next();
+                        scanner.close();
+                    }
+                    catch(FileNotFoundException fe){
+                        System.out.println("No found!");
+                    }
+
+                    // do something
+                }
+
+                String clientDisconnectUrl = "http://localhost/distpano/disconnectClient.php?cid="+sx.substring(50);
+                            // String taskFetchUrl = "https://facebook.com";
+                             // URL url = new URL(args[0]);
+
+                System.out.println(clientDisconnectUrl);
+
+                try {
+                    URL url = new URL(clientDisconnectUrl);
+                    try{
+
+                        URLConnection connection = url.openConnection();
+                        connection.setDoOutput(true);
+                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                        String decodedString;
+                        String s = "";
+                        while ((decodedString = in.readLine()) != null) {
+                            //System.out.println(decodedString);
+                            s += decodedString;
+                        }
+
+                        System.out.println(s);
+
+
+                    }
+                    catch(IOException e){
+                        System.out.println("Error");
+                    }
+                }
+                catch(IOException e){
+                    System.out.println("Error");
+                }
+
                 System.exit(0);
             }
         } );

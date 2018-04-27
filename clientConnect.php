@@ -31,10 +31,9 @@
 	}
 	else{
 
-		$cj = substr($cjson, 0, strlen($cjson)-2);
+		$cj = substr($cjson, 0, strlen($cjson)-1);
 
 		$cid = $cj;
-
 
 		$sql = "UPDATE clients SET status = '0', last_active = '$time' WHERE cid = '$cid'";
 		$conn->query($sql);
@@ -47,3 +46,7 @@
 		echo $response;
 	}
 
+	//echo $sql;
+
+
+// {"chash":"c4ca4238a0b923820dcc509a6f75849b","cid":1}

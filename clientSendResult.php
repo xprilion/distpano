@@ -1,6 +1,7 @@
 <?php
 
     include('head.php');
+    include('resultAssimilator.php');
 
     $taskhash = $_GET["taskhash"];
     $imghash1 = $_GET["imghash1"];
@@ -13,7 +14,7 @@
 
     $res = $_GET["res"];
 
-    if(strlen(trim(ltrim(rtrim($res)))) > 0){
+    if((strlen(trim(ltrim(rtrim($res)))) > 0) && (res!="error")){
 
         //$res = "23,34|54,24;45,25|57,85;34,77|53,75;";
 
@@ -85,6 +86,11 @@
     echo '<br>';
     if(!mysqli_query($conn, $sql["res"])){
         echo mysqli_error($conn);
+    }
+
+    if(checkResult($taskid, $imgid1, $imgid2, "JPG", "JPG")){
+        echo "enough points";
+        stitchQuick($taskid, $imgid1, $imgid2, "JPG", "JPG");
     }
 
 ?>
